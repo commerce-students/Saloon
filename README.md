@@ -308,6 +308,33 @@ empty and error states, and the build itself.
 
 ---
 
+## Publishing this project to GitHub
+
+This working copy lives on the branch `arena/01a0d4e7-saloon`. To publish it as its
+own repository named **`chic-by-sisters-clinic-booking`**:
+
+```bash
+# Option A — helper script (creates the repo, adds remote `clinic`, pushes main)
+gh auth login
+./scripts/publish-to-github.sh                 # or: ./scripts/publish-to-github.sh <owner>
+
+# Option B — by hand
+gh repo create chic-by-sisters-clinic-booking --public \
+  --description "Appointment-booking website for Chic by Sisters Clinic (Muscat, Oman)"
+git remote add clinic https://github.com/<owner>/chic-by-sisters-clinic-booking.git
+git push clinic HEAD:main
+```
+
+Both routes refuse to run while an environment file is tracked by git. Before
+pushing, confirm:
+
+```bash
+npm test && npm run lint && npm run typecheck && npm run build
+git ls-files | grep -E '\.env'      # should list only .env.example
+```
+
+---
+
 ## Deployment
 
 Any Node host works. Vercel is the shortest path:
