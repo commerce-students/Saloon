@@ -29,6 +29,7 @@ cancel without phoning the clinic.
 - [WhatsApp automation](#whatsapp-automation)
 - [Admin dashboard & authentication](#admin-dashboard--authentication)
 - [Testing](#testing)
+- [Publishing to GitHub](#publishing-this-project-to-github)
 - [Deployment](#deployment)
 - [Content & business-information checklist](#content--business-information-checklist)
 - [Accessibility & performance](#accessibility--performance)
@@ -79,7 +80,7 @@ cancel without phoning the clinic.
 | Concern       | Choice                                          | Why                                                                                |
 | ------------- | ----------------------------------------------- | ---------------------------------------------------------------------------------- |
 | Framework     | Next.js 15 (App Router)                         | Server rendering for SEO, route handlers and Server Actions for later backend work |
-| Language      | TypeScript (strict, `noUncheckedIndexedAccess`) | Safer refactors                                                                    |
+| Language      | TypeScript (strict, `noUncheckedIndexedAccess`) | Refactors that fail loudly instead of quietly                                      |
 | Styling       | Tailwind CSS v4                                 | Design tokens in `src/app/globals.css`, no runtime CSS-in-JS                       |
 | Fonts         | Self-hosted Cormorant Garamond + Jost           | No third-party font CDN, no visitor data leakage, no layout shift                  |
 | Data (future) | Supabase (Postgres + Auth + RLS)                | See [`supabase/schema.sql`](supabase/schema.sql)                                   |
@@ -106,19 +107,23 @@ npm run dev          # http://localhost:3000
 
 Useful scripts:
 
-| Script                    | What it does                                        |
-| ------------------------- | --------------------------------------------------- |
-| `npm run dev`             | Development server                                  |
-| `npm run build`           | Production build (includes type checking)           |
-| `npm start`               | Serve the production build                          |
-| `npm run lint`            | ESLint (Next.js core-web-vitals + TypeScript rules) |
-| `npm run typecheck`       | `tsc --noEmit`                                      |
-| `npm test`                | Vitest suite (availability, dates, validation, ICS) |
-| `npm run format`          | Prettier, including the Tailwind class-order plugin |
-| `npm run images:optimize` | Re-encode the placeholder images in `src/assets`    |
+| Script                    | What it does                                                                |
+| ------------------------- | --------------------------------------------------------------------------- |
+| `npm run dev`             | Development server                                                          |
+| `npm run build`           | Production build (includes type checking)                                   |
+| `npm start`               | Serve the production build                                                  |
+| `npm run lint`            | ESLint (Next.js core-web-vitals + TypeScript rules)                         |
+| `npm run typecheck`       | `tsc --noEmit`                                                              |
+| `npm test`                | Vitest suite (availability, dates, validation, demo booking lifecycle, ICS) |
+| `npm run format`          | Prettier, including the Tailwind class-order plugin                         |
+| `npm run images:optimize` | Re-encode the placeholder images in `src/assets`                            |
 
 No database, account or API key is required to run the project — the demo backend
 takes over automatically.
+
+> Run `npm run build` on its own: the production build and `next dev` share the
+> `.next` directory, so building while the dev server is running can leave the dev
+> bundle inconsistent (delete `.next` and restart if that happens).
 
 ---
 
@@ -176,7 +181,7 @@ src/
 │   │                     # backends (demo + Supabase), calendar export, catalog
 │   ├── supabase/         # browser / server / service-role clients, config
 │   ├── whatsapp/         # Cloud API client, message templates, notifications
-│   ├── format.ts, seo.ts
+│   └── format.ts, seo.ts
 supabase/schema.sql       # Tables, RLS policies, booking RPCs, constraints
 docs/                     # Deployment, Supabase, WhatsApp, admin, security
 ```
@@ -299,7 +304,8 @@ npm run build     # Production build
 The suite covers the parts most likely to break quietly: session boundaries,
 lead time, turnover buffers, blocked periods, reschedule exclusions, month grids,
 time-zone conversion (Muscat is UTC+4 — a classic source of off-by-one-day bugs),
-phone/reference normalisation and iCalendar export.
+phone/reference normalisation, iCalendar export, and the complete demo booking
+lifecycle (book → double-booking refused → reschedule → cancel → lookup).
 
 **Manual checklist** before a release: navigation, mobile drawer, service → date →
 time → details → confirm, validation errors, confirmation, add-to-calendar,
@@ -386,7 +392,8 @@ confirms them.
   alone (they are struck through and labelled).
 - `prefers-reduced-motion` disables all animation.
 - Self-hosted subset fonts (≈100 KB total), AVIF/WebP images, `next/image`
-  responsive sizes, a lazy-loaded map iframe and a small shared JS bundle.
+  responsive sizes, a lazy-loaded map iframe and a small shared JS bundle
+  (≈103 KB first load, ≈112 KB on the home page).
 
 ---
 
