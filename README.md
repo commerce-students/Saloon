@@ -113,7 +113,7 @@ Useful scripts:
 | `npm run build`           | Production build (includes type checking)                                   |
 | `npm start`               | Serve the production build                                                  |
 | `npm run lint`            | ESLint (Next.js core-web-vitals + TypeScript rules)                         |
-| `npm run typecheck`       | `tsc --noEmit`                                                              |
+| `npm run typecheck`       | `next typegen` then `tsc --noEmit` — works from a clean clone               |
 | `npm test`                | Vitest suite (availability, dates, validation, demo booking lifecycle, ICS) |
 | `npm run format`          | Prettier, including the Tailwind class-order plugin                         |
 | `npm run images:optimize` | Re-encode the placeholder images in `src/assets`                            |
@@ -297,7 +297,7 @@ The full screen-by-screen specification is in
 ```bash
 npm test          # Vitest: availability engine, date/time zones, validation, ICS
 npm run lint      # ESLint
-npm run typecheck # TypeScript
+npm run typecheck # TypeScript (runs `next typegen` first for a clean clone)
 npm run build     # Production build
 ```
 

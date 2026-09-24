@@ -33,6 +33,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      # `next typegen` (inside `npm run typecheck`) generates next-env.d.ts and the
+      # route types first. next-env.d.ts is git-ignored by design, so a clean
+      # checkout has no image/asset module declarations until it runs.
       - name: Type-check
         run: npm run typecheck
 
